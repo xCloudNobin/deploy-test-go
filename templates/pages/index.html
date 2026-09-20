@@ -1,0 +1,26 @@
+{{define "content"}}
+<section class="page-head">
+  <h1>Project board</h1>
+  <p>Projects group tasks. Create, edit, search and track work across your teams.</p>
+</section>
+
+<form class="filters" method="get" action="/">
+  <label>Search
+    <input type="search" name="q" value="{{.Q}}" placeholder="Search tasks by title or description" autocomplete="off">
+  </label>
+  <label>Status
+    <select name="status">
+      <option value="">Any status</option>
+      {{range statuses}}<option value="{{.}}" {{if eq . $.Status}}selected{{end}}>{{statusLabel .}}</option>{{end}}
+    </select>
+  </label>
+  <button class="btn" type="submit">Apply</button>
+  {{if or .Q .Status}}<a class="btn btn-outline" href="/">Clear</a>{{end}}
+</form>
+
+{{if .Projects}}
+  {{range .Projects}}{{template "projectCard" .}}{{end}}
+{{else}}
+  <p class="empty">No projects yet. <a href="/projects/new">Create the first project</a>.</p>
+{{end}}
+{{end}}

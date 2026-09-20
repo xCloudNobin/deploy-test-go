@@ -1,0 +1,79 @@
+{{define "base"}}<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>{{.Title}} · Taskboard</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="/">Taskboard</a>
+    <span class="marker" title="Release/build marker">v{{.Marker}}</span>
+    <nav class="topnav">
+      <a href="/">Board</a>
+      <a href="/projects/new">New project</a>
+      <a href="/health">Health</a>
+      <a href="/readiness">Readiness</a>
+    </nav>
+  </div>
+</header>
+<main class="wrap">
+  {{if .Msg}}<div class="flash flash-ok" role="status">{{.Msg}}</div>{{end}}
+  {{if .Err}}<div class="flash flash-err" role="alert">{{.Err}}</div>{{end}}
+  {{block "content" .}}{{end}}
+</main>
+<footer class="foot">
+  <p>Public demo board. Data is stored in a persistent SQLite database; search, status filter and quick status updates are supported.</p>
+</footer>
+<script src="/static/app.js"></script>
+</body>
+</html>{{end}}
+
+{{define "taskCard"}}
+<article class="task">
+  <span class="badge {{statusClass .Status}}" data-task-badge="{{.ID}}">{{statusLabel .Status}}</span>
+  <div class="task-body">
+    <h4>{{.Title}}</h4>
+    {{if .Description}}<p>{{.Description}}</p>{{end}}
+  </div>
+  <select class="status-select" data-task-status="{{.ID}}" aria-label="Change status of {{.Title}}">
+    {{range statuses}}<option value="{{.}}" {{if eq . $.Status}}selected{{end}}>{{statusLabel .}}</option>{{end}}
+  </select>
+  <div class="task-actions">
+    <a class="btn btn-sm" href="/tasks/{{.ID}}/edit">Edit</a>
+    <form method="post" action="/tasks/{{.ID}}/delete" data-confirm="Delete this task?">
+      <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+    </form>
+  </div>
+</article>
+{{end}}
+
+{{define "projectCard"}}
+<section class="project card">
+  <div class="project-head">
+    <div>
+      <h3>{{.Name}}</h3>
+      {{if .Description}}<p class="project-desc">{{.Description}}</p>{{end}}
+      <span class="count">{{.TaskCount}} task{{if ne .TaskCount 1}}s{{end}}</span>
+    </div>
+    <div class="project-actions">
+      <a class="btn btn-sm" href="/projects/{{.ID}}">Open</a>
+      <a class="btn btn-sm" href="/projects/{{.ID}}/edit">Edit</a>
+      <form method="post" action="/projects/{{.ID}}/delete" data-confirm="Delete this project and all of its tasks?">
+        <button class="btn btn-sm btn-danger" type="submit">Delete</button>
+      </form>
+    </div>
+  </div>
+  <div class="project-tasks">
+    {{if .Tasks}}
+      {{range .Tasks}}{{template "taskCard" .}}{{end}}
+    {{else}}
+      <p class="empty">No tasks match the current filters.</p>
+    {{end}}
+  </div>
+  <a class="btn btn-sm btn-outline" href="/tasks/new?project_id={{.ID}}">+ Add task to this project</a>
+</section>
+{{end}}

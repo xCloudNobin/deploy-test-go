@@ -1,0 +1,36 @@
+{{define "content"}}
+{{with .Project}}
+<section class="page-head">
+  <div class="head-line">
+    <h1>{{.Name}}</h1>
+    <div class="project-actions">
+      <a class="btn btn-sm" href="/projects/{{.ID}}/edit">Edit project</a>
+      <a class="btn btn-sm btn-outline" href="/tasks/new?project_id={{.ID}}">+ Add task</a>
+    </div>
+  </div>
+  {{if .Description}}<p class="project-desc">{{.Description}}</p>{{end}}
+</section>
+
+<form class="filters" method="get" action="/projects/{{.ID}}">
+  <label>Search
+    <input type="search" name="q" value="{{$.Q}}" placeholder="Search tasks in this project" autocomplete="off">
+  </label>
+  <label>Status
+    <select name="status">
+      <option value="">Any status</option>
+      {{range $.Statuses}}<option value="{{.}}" {{if eq . $.Status}}selected{{end}}>{{statusLabel .}}</option>{{end}}
+    </select>
+  </label>
+  <button class="btn" type="submit">Apply</button>
+  {{if or $.Q $.Status}}<a class="btn btn-outline" href="/projects/{{.ID}}">Clear</a>{{end}}
+</form>
+
+<div class="project-tasks">
+  {{if $.Tasks}}
+    {{range $.Tasks}}{{template "taskCard" .}}{{end}}
+  {{else}}
+    <p class="empty">No tasks match the current filters.</p>
+  {{end}}
+</div>
+{{end}}
+{{end}}
