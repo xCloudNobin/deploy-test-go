@@ -1,0 +1,33 @@
+{{define "content"}}
+<section class="page-head">
+  {{with .Task}}<h1>Edit task</h1>{{else}}<h1>New task</h1>{{end}}
+</section>
+
+<form class="card form" method="post" action="{{with .Task}}/tasks/{{.ID}}/edit{{else}}/tasks{{end}}">
+  <label>Project
+    <select name="project_id" required>
+      <option value="">Select a project</option>
+      {{range .Projects}}
+        <option value="{{.ID}}" {{if and $.Task (eq .ID $.Task.ProjectID)}}selected{{end}}>{{.Name}}</option>
+      {{end}}
+    </select>
+  </label>
+  <label>Title
+    <input type="text" name="title" maxlength="200" required
+           value="{{if .Task}}{{.Task.Title}}{{end}}" placeholder="Task title">
+  </label>
+  <label>Description
+    <textarea name="description" maxlength="5000" rows="4"
+              placeholder="Details...">{{if .Task}}{{.Task.Description}}{{end}}</textarea>
+  </label>
+  <label>Status
+    <select name="status">
+      {{range statuses}}<option value="{{.}}" {{if and $.Task (eq . $.Task.Status)}}selected{{end}}>{{statusLabel .}}</option>{{end}}
+    </select>
+  </label>
+  <div class="form-actions">
+    <button class="btn" type="submit">Save</button>
+    <a class="btn btn-outline" href="{{if .Task}}/projects/{{.Task.ProjectID}}{{else}}/{{end}}">Cancel</a>
+  </div>
+</form>
+{{end}}

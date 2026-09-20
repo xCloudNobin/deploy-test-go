@@ -1,0 +1,20 @@
+{{define "content"}}
+<section class="page-head">
+  {{with .Project}}<h1>Edit project</h1>{{else}}<h1>New project</h1>{{end}}
+</section>
+
+<form class="card form" method="post" action="{{with .Project}}/projects/{{.ID}}/edit{{else}}/projects{{end}}">
+  <label>Name
+    <input type="text" name="name" maxlength="120" required autofocus
+           value="{{with .Project}}{{.Name}}{{end}}" placeholder="Project name">
+  </label>
+  <label>Description
+    <textarea name="description" maxlength="5000" rows="4"
+              placeholder="What is this project about?">{{with .Project}}{{.Description}}{{end}}</textarea>
+  </label>
+  <div class="form-actions">
+    <button class="btn" type="submit">Save</button>
+    <a class="btn btn-outline" href="{{with .Project}}/projects/{{.ID}}{{else}}/{{end}}">Cancel</a>
+  </div>
+</form>
+{{end}}
